@@ -18,6 +18,7 @@ export const ProjectDescription = (props: IProjectDialogState) => {
     <TextField
       margin="dense"
       id="description"
+      variant="standard"
       label={t.description}
       value={description}
       onChange={handleChangeDescription}

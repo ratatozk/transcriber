@@ -26,6 +26,7 @@ export const ProjectName = (props: IProps) => {
       autoFocus
       margin="dense"
       id="name"
+      variant="standard"
       required
       label={t.projectName}
       value={name}

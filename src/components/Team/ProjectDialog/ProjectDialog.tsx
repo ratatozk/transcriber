@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogProps,
+  Grid,
   styled,
   Tabs,
   Tab,
@@ -62,7 +63,7 @@ interface IProps extends IDialog<IProjectDialog> {
 }
 
 const tabProps = {
-  width: "200px",
+  width: "50%"
 } as SxProps;
 
 export function ProjectDialog(props: IProps) {
@@ -127,6 +128,8 @@ export function ProjectDialog(props: IProps) {
         value={value}
         onChange={handleChange}
         sx={{
+          maxWidth: "400px",
+          width: "100%",
           "& .MuiTabs-indicator": {
               backgroundColor: "secondary.dark",
               height: "2px",
@@ -140,8 +143,14 @@ export function ProjectDialog(props: IProps) {
         <Tab label="Advanced" sx={ tabProps }/>
       </Tabs>
       <DialogContent>
-        <ProjectName state={state} setState={setState} inUse={nameInUse} />
-        <ProjectDescription state={state} setState={setState} />
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <ProjectName state={state} setState={setState} inUse={nameInUse} />
+          </Grid>
+          <Grid item xs={6}>
+            <ProjectDescription state={state} setState={setState} />
+          </Grid>
+        </Grid>
         <ProjectType type={type} onChange={handleTypeChange} />
         <ProjectBook
           state={state}
