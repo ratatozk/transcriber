@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ITag, IVProjectStrings } from '../../../model';
 import {
+  Box,
   Dialog,
   DialogContent,
   Grid,
   Tabs,
   Tab,
   SxProps,
-  Box,
 } from '@mui/material';
 import {
   ProjectName,
@@ -53,6 +53,7 @@ export interface IProjectDialogState {
   setState: React.Dispatch<React.SetStateAction<IProjectDialog>>;
   setBookErr?: React.Dispatch<React.SetStateAction<string>>;
   addMode?: boolean;
+  tagCheck?: boolean;
 }
 
 interface IProps extends IDialog<IProjectDialog> {
@@ -71,6 +72,7 @@ export function ProjectDialog(props: IProps) {
   const [state, setState] = React.useState({ ...initState });
   const { name, type, bcp47 } = state;
   const [bookErr, setBookErr] = React.useState('');
+  const [basicTab, setBasicTab] = useState(true);
   const addingRef = React.useRef(false);
 
   useEffect(() => {
@@ -104,6 +106,12 @@ export function ProjectDialog(props: IProps) {
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
+    if (newValue === 0){
+      setBasicTab(true);
+    }
+    else {
+      setBasicTab(false);
+    }
   };
 
 
@@ -139,25 +147,36 @@ export function ProjectDialog(props: IProps) {
         <Tab label="Basic" sx={ tabProps }/>
         <Tab label="Advanced" sx={ tabProps }/>
       </Tabs>
-      <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '10px' }}>
-          <ProjectName state={state} setState={setState} inUse={nameInUse} />
-          <ProjectDescription state={state} setState={setState} />
-        </Box>
-        <ProjectType type={type} onChange={handleTypeChange} />
-        <ProjectBook
-          state={state}
-          setState={setState}
-          setBookErr={setBookErr}
-        />
-        <Language {...state} onChange={handleLanguageChange} />
-        <ProjectTags state={state} setState={setState} />
-        <ProjectExpansion
-          state={state}
-          setState={setState}
-          addMode={mode === Mode.add}
-        />
-      </DialogContent>
+      {basicTab ? (
+          <Box>
+            <DialogContent>
+              <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '10px' }}>
+                <ProjectName state={state} setState={setState} inUse={nameInUse} />
+                <ProjectDescription state={state} setState={setState} />
+              </Box>
+              <ProjectType type={type} onChange={handleTypeChange} />
+              <ProjectBook
+                state={state}
+                setState={setState}
+                setBookErr={setBookErr}
+              />
+              <Language {...state} onChange={handleLanguageChange} />
+              <ProjectTags state={state} setState={setState} />
+            </DialogContent>
+          </Box>
+        ) : (
+          <Box>
+            <DialogContent>
+              <ProjectExpansion
+                state={state}
+                setState={setState}
+                addMode={mode === Mode.add}
+              />
+            </DialogContent>
+          </Box>
+        )
+      }
+
       <AltActionBar
         primaryLabel={mode === Mode.add ? t.add : t.save}
         primaryOnClick={handleAdd}
