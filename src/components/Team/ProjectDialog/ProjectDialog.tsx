@@ -24,13 +24,6 @@ import { shallowEqual, useSelector } from 'react-redux';
 import { vProjectSelector } from '../../../selector';
 import { ProjectBook } from './ProjectBook';
 
-const StyledDialog = styled(Dialog)<DialogProps>(() => ({
-  '& .MuiDialog-paper': {
-    maxWidth: '850px',
-    minWidth: '535px',
-  },
-}));
-
 const initState = {
   name: '',
   description: '',
@@ -102,12 +95,27 @@ export function ProjectDialog(props: IProps) {
   };
 
   return (
-    <StyledDialog
+    <Dialog
+      id="projectSettings"
       open={isOpen}
       onClose={handleClose}
       aria-labelledby="projectDlg"
+      scroll={'paper'}
+      disableEnforceFocus
+      maxWidth="lg"
+      fullWidth
     >
-      <DialogTitle id="projectDlg">
+      <DialogTitle 
+        id="projectDlg"
+        sx={{
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          padding: '10px',
+          paddingLeft: '25px',
+          color: 'secondary.contrastText',
+          borderBottom: '1px solid lightgray'
+        }}>
         {t.newProject.replace('{0}', mode === Mode.add ? t.configure : t.edit)}
       </DialogTitle>
       <DialogContent>
@@ -146,7 +154,7 @@ export function ProjectDialog(props: IProps) {
           {mode === Mode.add ? t.add : t.save}
         </Button>
       </DialogActions>
-    </StyledDialog>
+    </Dialog>
   );
 }
 
