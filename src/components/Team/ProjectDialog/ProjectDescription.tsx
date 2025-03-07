@@ -19,9 +19,10 @@ export const ProjectDescription = (props: IProjectDialogState) => {
       margin="dense"
       id="description"
       variant="standard"
-      label={t.description}
+      label={t.description} // Should say Audio Project Description
       value={description}
       onChange={handleChangeDescription}
+      sx={{ minWidth: '196px', flex: '1 1 calc(50% - 5px)', }}
       fullWidth
     />
   );
