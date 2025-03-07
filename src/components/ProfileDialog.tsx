@@ -11,7 +11,6 @@ import {
 } from '../model';
 import {
   Dialog,
-  DialogTitle,
   Button,
   DialogContent,
   FormControlLabel,
@@ -25,10 +24,8 @@ import {
   TextField,
   MenuItem,
   Checkbox,
-  IconButton,
   Switch,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import Confirm from '../components/AlertDialog';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
@@ -50,7 +47,6 @@ import { shallowEqual, useSelector } from 'react-redux';
 import ParatextLinkedButton from '../components/ParatextLinkedButton';
 import { profileSelector } from '../selector';
 import { UnsavedContext } from '../context/UnsavedContext';
-import DeleteExpansion from '../components/DeleteExpansion';
 import { useOrbitData } from '../hoc/useOrbitData';
 import { RecordTransformResult, InitializedRecord } from '@orbit/records'
 import { useDispatch } from 'react-redux';
@@ -73,6 +69,7 @@ import {
 import SelectRole from '../control/SelectRole';
 import { ActionRow, AltButton, PriButton } from '../control';
 import ExtendableDeleteExpansion from './ExtendableDeleteExpansion';
+import { StyledDialogTitle } from './StyledDialogTitle';
 
 const Caption = styled(Typography)<TypographyProps>(() => ({
   width: 150,
@@ -813,17 +810,14 @@ export function ProfileDialog(props: ProfileDialogProps) {
       maxWidth="md"
       fullWidth
     >
-      <DialogTitle
+      <StyledDialogTitle
         id="profileDlg"
-        sx={{
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          padding: '10px',
-          paddingLeft: '25px',
-          color: 'secondary.contrastText',
-          borderBottom: '1px solid lightgray'
-        }}
+        onClose={readOnlyMode ? () => {
+          if (myChanged) {
+            setConfirmClose(tp.discardChanges);
+          } else handleCloseConfirmed();
+        } : undefined
+      }
       >
         {editUserId && /Add/i.test(editUserId) ? (
             <Typography variant="h6">{tp.addMember}</Typography>
@@ -833,16 +827,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
             <Typography variant="h6">{t.myAccount}</Typography>
           )
         }
-        {readOnlyMode && 
-        <IconButton
-          aria-label="close"
-          onClick={() => {if (myChanged) {
-                            setConfirmClose(tp.discardChanges);
-                          } else handleCloseConfirmed();}} //handleClose
-          sx={{ color: 'secondary.contrastText' }}>
-          <CloseIcon></CloseIcon>
-        </IconButton>}
-      </DialogTitle>
+      </StyledDialogTitle>
       <DialogContent id="profileContent" 
         sx={profileContentProps}>
           <Box id="profilePanel" sx={profilePanelProps}>
