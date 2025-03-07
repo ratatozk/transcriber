@@ -194,6 +194,16 @@ export function ProjectDialog(props: IProps) {
         altOnClick={handleClose}
         altKey={"cancel"}
         altAria={t.cancel}
+        sx={{ 
+          position: 'sticky', 
+          bottom: '0px', 
+          padding: '10px 0px', 
+          paddingLeft: '10px',
+          pointerEvents: 'auto', 
+          zIndex: '10',
+          borderTop: '1px solid lightgray',
+          backgroundColor: 'primary.contrastText'
+        }}
       />
     </Dialog>
   );
