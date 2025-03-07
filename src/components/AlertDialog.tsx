@@ -83,7 +83,7 @@ function AlertDialog(props: IProps) {
         {title || (isDelete ? t.delete : t.confirmation)}
       </DialogTitle>
       <DialogContent>
-        <DialogContent id="alertJsx">{jsx}</DialogContent>
+      {jsx && (<DialogContent id="alertJsx">{jsx}</DialogContent>)}
         <DialogContentText id="alertDesc">
           {text || t.areYouSure}
         </DialogContentText>

@@ -50,7 +50,7 @@ import { UnsavedContext } from '../context/UnsavedContext';
 import { useOrbitData } from '../hoc/useOrbitData';
 import { RecordTransformResult, InitializedRecord } from '@orbit/records'
 import { useDispatch } from 'react-redux';
-import { useGetGlobal, useGlobal } from '../context/GlobalContext';
+import { useGlobal } from '../context/GlobalContext';
 import * as action from '../store';
 import {
   related,
@@ -60,7 +60,7 @@ import {
   useTeamDelete,
   useUser
 } from '../crud';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import {
   AddRecord,
   UpdateRecord,
@@ -264,13 +264,16 @@ const StyledGrid = styled(Grid)<GridProps>(() => ({
 }));
 
 interface ProfileDialogProps {
-  readOnlyMode?: boolean;
+  mode?: 'create' | 'editMember' | 'viewMyAccount';
   open: boolean;
-  onClose: () => void;
+  editId?: string;
+  onClose?: () => void;
+  onSave?: () => void;
+  onCancel?: () => void;
   finishAdd?: () => void;
 }
 export function ProfileDialog(props: ProfileDialogProps) {
-  const { readOnlyMode, onClose, open, finishAdd } = props;
+  const { mode, open, editId, onClose, onSave, onCancel, finishAdd } = props;
   const users = useOrbitData<UserD[]>('user');
   const t: IMainStrings = useSelector(mainSelector, shallowEqual);
   const tp: IProfileStrings = useSelector(profileSelector, shallowEqual);
@@ -278,8 +281,6 @@ export function ProfileDialog(props: ProfileDialogProps) {
   const setLanguage = (lang: string) => dispatch(action.setLanguage(lang));
   const [isOffline] = useGlobal('offline'); //verified this is not used in a function 2/18/25
   const [memory] = useGlobal('memory');
-  const [editUserId, setEditUserId] = useGlobal('editUserId'); //verified this is not used in a function 2/18/25
-  const getGlobal = useGetGlobal();
   const [organization] = useGlobal('organization');
   const [user, setUser] = useGlobal('user');
   const [, setLang] = useGlobal('lang');
@@ -339,12 +340,12 @@ export function ProfileDialog(props: ProfileDialogProps) {
 
   const doClose = () => {
       const view = localStorage.getItem(localUserKey(LocalKey.url));
-      if (view && !/Profile/i.test(view)) {
+      if (view) {
         setView(view);
-      } else {
-        setView('/team');
       }
-      onClose();
+      if (onClose) {
+        onClose();
+      }
     };
 
   const handleNameClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -365,7 +366,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
         setFamily(parts[parts.length - 1]);
       }
     }
-    if (getGlobal('editUserId')) {
+    if (editId) {
       const userRecs = users.filter(
         (u) => u.attributes?.name === e.target.value
       );
@@ -506,14 +507,14 @@ export function ProfileDialog(props: ProfileDialogProps) {
           );
         }
       }
-      if (!getGlobal('editUserId')) setLanguage(locale);
+      if (!editId) setLanguage(locale);
     }
     saveCompleted(toolId);
-    if (getGlobal('editUserId')) {
-      setEditUserId(null);
-    }
     saving.current = false;
-    setReadOnly(true);
+    if (onSave) {
+      onSave();
+    }
+    setReadOnly(mode === 'viewMyAccount');
   };
 
   const handleAdd = async () => {
@@ -540,7 +541,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
           avatarUrl,
         },
       } as User;
-      if (!getGlobal('editUserId') || !organization) {
+      if (!editId || !organization) {
         await memory.update((t) => AddRecord(t, userRec, user, memory));
         if (offlineOnly) setUser(userRec.id as string);
       } else {
@@ -560,9 +561,6 @@ export function ProfileDialog(props: ProfileDialogProps) {
     }
     if (finishAdd) {
       finishAdd();
-    }
-    if (getGlobal('editUserId')) {
-      setEditUserId(null);
     }
   };
 
@@ -589,6 +587,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
     setHotKeys(attr.hotKeys);
     setAvatarUrl(attr.avatarUrl);
     setSyncFreq(getSyncFreq(attr.hotKeys));
+    setSync(syncFreq > 0);
   }
 
   const handleCancel = () => {
@@ -613,8 +612,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
   const handleCancelConfirmed = () => {
     setConfirmCancel(undefined);
     toolChanged(toolId, false);
-    if (getGlobal('editUserId')) {
-      setEditUserId(null);
+    if (editId) {
       const userId = localStorage.getItem(LocalKey.userId);
       if (!userId && offlineOnly) {
         setView('Logout');
@@ -622,7 +620,10 @@ export function ProfileDialog(props: ProfileDialogProps) {
       }
     }
     resetUserData();
-    setReadOnly(true);
+    if (onCancel) {
+      onCancel();
+    }
+    setReadOnly(mode === 'viewMyAccount');
   };
 
   const handleCancelAborted = () => {
@@ -632,8 +633,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
   const handleCloseConfirmed = () => {
     setConfirmClose(undefined);
     toolChanged(toolId, false);
-    if (getGlobal('editUserId')) {
-      setEditUserId(null);
+    if (editId) {
       const userId = localStorage.getItem(LocalKey.userId);
       if (!userId && offlineOnly) {
         setView('Logout');
@@ -642,7 +642,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
     }
     resetUserData();
     doClose();
-    setReadOnly(true);
+    setReadOnly(mode === 'viewMyAccount');
   };
 
   const handleCloseAborted = () => {
@@ -653,11 +653,6 @@ export function ProfileDialog(props: ProfileDialogProps) {
     if (currentUser) setDeleteItem(currentUser.id);
   };
   
-  const handleLogout = () => {
-    setView('Logout');
-     //   return;
-  }
-
   const handleDeleteConfirmed = async () => {
     const deleteRec = getUserRec(deleteItem);
     await waitForRemoteQueue('wait for any changes to finish');
@@ -706,9 +701,9 @@ export function ProfileDialog(props: ProfileDialogProps) {
         avatarUrl,
       },
     } as User;
-    if (!editUserId || !/Add/i.test(editUserId)) {
+    if (!editId || !/Add/i.test(editId)) {
       const current = users.filter(
-        (u) => u.id === (editUserId ? editUserId : user)
+        (u) => u.id === (editId ? editId : user)
       );
       if (current.length === 1) {
         userRec = current[0];
@@ -748,8 +743,9 @@ export function ProfileDialog(props: ProfileDialogProps) {
     setHotKeys(attr.hotKeys);
     setAvatarUrl(attr.avatarUrl);
     setSyncFreq(getSyncFreq(attr.hotKeys));
+    setSync(syncFreq > 0);
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [user, editUserId]);
+  }, [user, editId]);
 
   const getSyncFreq = (hotKeys: string | null) => {
     const hk = JSON.parse(hotKeys ?? '{}');
@@ -779,22 +775,16 @@ export function ProfileDialog(props: ProfileDialogProps) {
 
   if (/Logout/i.test(view)) navigate('/logout');
   else if (/access/i.test(view)) navigate('/');
-  else if (view && !/Profile/i.test(view)) {
-    // return <StickyRedirect to={view} />;
-  }
+  
   const handleClose = () => {
-    if (myChanged) {
-      setConfirmClose(tp.discardChanges);
-    } else handleCloseConfirmed();
-  };
-  const handleCloseCreateProfile = (event: React.SyntheticEvent, reason: string | null) => {
-    if (!readOnlyMode && (reason === 'backdropClick' || reason === 'escapeKeyDown')) {
-      return;
+    if (onClose) {
+      if (myChanged) {
+        setConfirmClose(tp.discardChanges);
+      } else handleCloseConfirmed();
     }
-    handleClose();
   };
 
-  useEffect(() => setReadOnly(readOnlyMode ? true : false), [readOnlyMode]);
+  useEffect(() => setReadOnly(mode === 'viewMyAccount'), [mode]);
 
   const onEditClicked = () => {
     setReadOnly(false);
@@ -803,7 +793,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
   return (
     <Dialog
       id="profile"
-      onClose={handleCloseCreateProfile}
+      onClose={handleClose}
       aria-labelledby="profileDlg"
       open={open}
       scroll={'paper'}
@@ -820,7 +810,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
         } : undefined
       }
       >
-        {editUserId && /Add/i.test(editUserId) ? (
+        {editId && /Add/i.test(editId) ? (
             <Typography variant="h6">{tp.addMember}</Typography>
           ) : userNotComplete() ? (
             <Typography variant="h6">{tp.completeProfile}</Typography>
@@ -842,7 +832,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
                 <BigAvatar avatarUrl={avatarUrl} name={name || ''} />
               </Box>
               <Caption sx={profileEmailProps} >{email || ''}</Caption>
-              {readOnlyMode && (
+              {((editId && /Add/i.test(editId)) || !userNotComplete()) && (
               <Button disabled={!readOnly}
                 variant="contained"
                 onClick={onEditClicked}
@@ -854,7 +844,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
               <ParatextLinkedButton setView={setView}/>
             </StyledGrid>
             {!readOnly && (!isOffline || offlineOnly) &&
-              !editUserId &&
+              !editId &&
               currentUser &&
               currentUser.attributes?.name !== currentUser.attributes?.email &&
               (
@@ -910,30 +900,17 @@ export function ProfileDialog(props: ProfileDialogProps) {
                       alignItems: 'flex-start'
                     }}
                   >
-                    {syncFreq !== 0 ? (
-                      <FormControlLabel
-                        control={
-                          <Switch defaultChecked
-                            onChange={handleSyncFreqSwitch}
-                          />
-                        }
-                        labelPlacement="start"
-                        label={tp.syncFrequencyEnable}
-                        sx={ toggleSwitchProps }
-                      />
-                      ) : (
-                        <FormControlLabel
-                        control={
-                          <Switch
-                            onChange={handleSyncFreqSwitch}
-                          />
-                        }
-                        labelPlacement="start"
-                        label={tp.syncFrequencyEnable}
-                        sx={ toggleSwitchProps }
+                    <FormControlLabel
+                      control={
+                        <Switch
+                          checked={syncFreq > 0}
+                          onChange={handleSyncFreqSwitch}
                         />
-                      )
-                    }
+                      }
+                      labelPlacement="start"
+                      label={tp.syncFrequencyEnable}
+                      sx={ toggleSwitchProps }
+                    />
                     <FormControlLabel
                       control={
                         <TextField
@@ -1053,7 +1030,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
                   </Box>
                 ) : (
                   <Box>
-                    <FormControl sx={{ width: '100%', height: '443px'}}>
+                    <FormControl sx={{ width: '100%', height: '443px', marginBottom: '15px' }}>
                       <FormGroup
                         sx={{
                           padding: '3px',
@@ -1125,7 +1102,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
                           }
                           label=""
                         />
-                        {userIsAdmin && editUserId && email !== '' && (
+                        {userIsAdmin && editId && email !== '' && (
                           <FormControlLabel
                             control={
                               <SelectRole
@@ -1252,7 +1229,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
                             />
                             {userIsAdmin && (
                               <FormControlLabel
-                                sx={textFieldProps}
+                                sx={ textFieldProps }
                                 control={
                                   <Checkbox
                                     id="checkbox-locked"
@@ -1279,6 +1256,48 @@ export function ProfileDialog(props: ProfileDialogProps) {
                       altKey={}
                       altAria={}
                     ></AltActionBar>
+                    <ActionRow sx={{ textAlign: 'left', padding: '0px' }}>
+                      <PriButton
+                        id="profileSave"
+                        key="add"
+                        aria-label={tp.add}
+                        disabled={
+                          !requiredComplete() ||
+                          !myChanged ||
+                          saveRequested(toolId) ||
+                          dupName
+                        }
+                        sx={{
+                          marginLeft: '0',
+                          textTransform: 'capitalize'
+                        }}
+                        onClick={
+                          currentUser === undefined ?
+                            handleAdd :
+                            handleSave
+                        }
+                      >
+                        {editId && /Add/i.test(editId)
+                          ? tp.add
+                          : userNotComplete()
+                            ? tp.next
+                            : tp.save}
+                      </PriButton>
+                      {((mode === 'create') || (editId && /Add/i.test(editId)) ||
+                        (currentUser &&
+                          currentUser.attributes?.name !==
+                          currentUser.attributes?.email)) && (
+                          <AltButton
+                            id="profileCancel"
+                            key="cancel"
+                            aria-label={tp.cancel}
+                            onClick={handleCancel}
+                            sx={{ textTransform: 'capitalize', marginLeft:'8px' }}
+                          >
+                            {mode === 'create' ? tp.logout : tp.cancel}
+                          </AltButton>
+                        )}
+                    </ActionRow>
                   </Box>
                 )
               }

@@ -3,7 +3,6 @@ import { useGlobal } from '../context/GlobalContext';
 import { localizeRole, 
   LocalKey, 
   localUserKey, 
-  useMyNavigate, 
   restoreScroll } from '../utils';
 import { shallowEqual } from 'react-redux';
 import {
@@ -75,7 +74,6 @@ export function UserTable() {
   // const { pathname } = useLocation();
   const [organization] = useGlobal('organization');
   const [user] = useGlobal('user');
-  const [, setEditId] = useGlobal('editUserId');
   const [memory] = useGlobal('memory');
   const [offlineOnly] = useGlobal('offlineOnly'); //will be constant here
   const [offline] = useGlobal('offline'); //verified this is not used in a function 2/18/25
@@ -110,11 +108,10 @@ export function UserTable() {
   const [deleteItem, setDeleteItem] = useState('');
   const [dialogVisible, setDialogVisible] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
-  const [view, setView] = useState('');
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [editId, setEditId] = useState<string | undefined>();
+  const [, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const addToOrgAndGroup = useAddToOrgAndGroup();
   const teamDelete = useTeamDelete();
-  const navigate = useMyNavigate();
 
   const handleInvite = () => {
     setDialogVisible(true);
@@ -286,75 +283,77 @@ export function UserTable() {
     return <Table.Cell {...props} />;
   };
 
-  if (/profile/i.test(view)) {
-    navigate('/profile');
-  }
   return (
-    <div>
-      <Box sx={{ display: 'flex' }}>
-        <div>
-          <ActionRow>
-            {canEdit && (
-              <>
-                {!offlineOnly && (
-                  <PriButton
-                    key="add"
-                    aria-label={t.invite}
-                    onClick={handleInvite}
-                  >
-                    {t.invite}
-                    <AddIcon sx={iconMargin} />
-                  </PriButton>
-                )}
-                {offlineOnly && (
-                  <PriButton
-                    key="add-member"
-                    aria-label={t.addMember}
-                    onClick={handleAddOpen}
-                  >
-                    {t.addMember}
-                    <AddIcon sx={iconMargin} />
-                  </PriButton>
-                )}
-              </>
-            )}
-            <GrowingSpacer />
-            <FilterButton filter={filter} onFilter={handleFilter} />
-          </ActionRow>
-          <ShapingTable
-            columns={columnDefs}
-            columnWidths={columnWidths}
-            sortingEnabled={sortingEnabled}
-            filteringEnabled={filteringEnabled}
-            dataCell={Cell}
-            rows={data}
-            shaping={filter}
-          />
-        </div>
-          <Invite
-            visible={dialogVisible}
-            inviteIn={null}
-            addCompleteMethod={handleInviteComplete}
-            cancelMethod={handleInviteCancel}
-          />
-          <UserAdd
-            open={addOpen}
-            setOpen={handleSetAddOpen}
-            select={handleAddExisting}
-            add={handleAddNew}
-          />
-          {deleteItem !== '' ? (
-            <Confirm
-              text={''}
-              yesResponse={handleDeleteConfirmed}
-              noResponse={handleDeleteRefused}
-            />
-          ) : (
-            <></>
+    <Box sx={{ display: 'flex' }}>
+      <div>
+        <ActionRow>
+          {canEdit && (
+            <>
+              {!offlineOnly && (
+                <PriButton
+                  key="add"
+                  aria-label={t.invite}
+                  onClick={handleInvite}
+                >
+                  {t.invite}
+                  <AddIcon sx={iconMargin} />
+                </PriButton>
+              )}
+              {offlineOnly && (
+                <PriButton
+                  key="add-member"
+                  aria-label={t.addMember}
+                  onClick={handleAddOpen}
+                >
+                  {t.addMember}
+                  <AddIcon sx={iconMargin} />
+                </PriButton>
+              )}
+            </>
           )}
-        </Box>
-      <ProfileDialog open={profileOpen} onClose={handleProfile(false)} readOnlyMode={false} />
-    </div>
+          <GrowingSpacer />
+          <FilterButton filter={filter} onFilter={handleFilter} />
+        </ActionRow>
+        <ShapingTable
+          columns={columnDefs}
+          columnWidths={columnWidths}
+          sortingEnabled={sortingEnabled}
+          filteringEnabled={filteringEnabled}
+          dataCell={Cell}
+          rows={data}
+          shaping={filter}
+        />
+      </div>
+      <Invite
+        visible={dialogVisible}
+        inviteIn={null}
+        addCompleteMethod={handleInviteComplete}
+        cancelMethod={handleInviteCancel}
+      />
+      <UserAdd
+        open={addOpen}
+        setOpen={handleSetAddOpen}
+        select={handleAddExisting}
+        add={handleAddNew}
+      />
+      {deleteItem !== '' ? (
+        <Confirm
+          text={''}
+          yesResponse={handleDeleteConfirmed}
+          noResponse={handleDeleteRefused}
+        />
+      ) : (
+        <></>
+      )}
+      <ProfileDialog 
+        mode='editMember'
+        open={ profileOpen }
+        onClose={handleProfile(false)}
+        onCancel={handleProfile(false)}
+        onSave={handleProfile(false)}
+        editId={editId}
+      />
+    </Box>
   );
 }
 
