@@ -144,14 +144,6 @@ export function ProjectDialog(props: IProps) {
           <ProjectName state={state} setState={setState} inUse={nameInUse} />
           <ProjectDescription state={state} setState={setState} />
         </Box>
-        {/* <Grid container spacing={2}>
-          <Grid item xs={6}>
-            
-          </Grid>
-          <Grid item xs={6}>
-            
-          </Grid>
-        </Grid> */}
         <ProjectType type={type} onChange={handleTypeChange} />
         <ProjectBook
           state={state}
