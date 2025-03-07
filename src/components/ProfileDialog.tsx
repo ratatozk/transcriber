@@ -803,7 +803,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
     >
       <StyledDialogTitle
         id="profileDlg"
-        onClose={readOnlyMode ? () => {
+        onClose={mode === "viewMyAccount" ? () => {
           if (myChanged) {
             setConfirmClose(tp.discardChanges);
           } else handleCloseConfirmed();
@@ -1245,59 +1245,36 @@ export function ProfileDialog(props: ProfileDialogProps) {
                       </FormGroup>
                     </FormControl>
                     <AltActionBar
-                      primaryLabel={}
-                      primaryOnClick={}
-                      primaryDisabled={}
-                      primaryKey={}
-                      primaryAria={}
-                      altLabel={}
-                      altOnClick={}
-                      altDisabled={}
-                      altKey={}
-                      altAria={}
-                    ></AltActionBar>
-                    <ActionRow sx={{ textAlign: 'left', padding: '0px' }}>
-                      <PriButton
-                        id="profileSave"
-                        key="add"
-                        aria-label={tp.add}
-                        disabled={
-                          !requiredComplete() ||
-                          !myChanged ||
-                          saveRequested(toolId) ||
-                          dupName
-                        }
-                        sx={{
-                          marginLeft: '0',
-                          textTransform: 'capitalize'
-                        }}
-                        onClick={
-                          currentUser === undefined ?
-                            handleAdd :
-                            handleSave
-                        }
-                      >
-                        {editId && /Add/i.test(editId)
-                          ? tp.add
-                          : userNotComplete()
-                            ? tp.next
-                            : tp.save}
-                      </PriButton>
-                      {((mode === 'create') || (editId && /Add/i.test(editId)) ||
+                      primaryLabel={
+                        editId && /Add/i.test(editId)
+                        ? tp.add
+                        : userNotComplete()
+                          ? tp.next
+                          : tp.save
+                      }
+                      primaryOnClick={
+                        currentUser === undefined ? handleAdd : handleSave
+                      }
+                      primaryDisabled={
+                        !requiredComplete() ||
+                        !myChanged ||
+                        saveRequested(toolId) ||
+                        dupName
+                      }
+                      primaryKey={"add"}
+                      primaryAria={tp.add}
+                      altShown={
+                        (mode === 'create') || 
+                        (editId && /Add/i.test(editId)) ||
                         (currentUser &&
                           currentUser.attributes?.name !==
-                          currentUser.attributes?.email)) && (
-                          <AltButton
-                            id="profileCancel"
-                            key="cancel"
-                            aria-label={tp.cancel}
-                            onClick={handleCancel}
-                            sx={{ textTransform: 'capitalize', marginLeft:'8px' }}
-                          >
-                            {mode === 'create' ? tp.logout : tp.cancel}
-                          </AltButton>
-                        )}
-                    </ActionRow>
+                          currentUser.attributes?.email
+                      )}
+                      altLabel={mode === 'create' ? tp.logout : tp.cancel}
+                      altOnClick={handleCancel}
+                      altKey={"cancel"}
+                      altAria={tp.cancel}
+                    ></AltActionBar>
                   </Box>
                 )
               }

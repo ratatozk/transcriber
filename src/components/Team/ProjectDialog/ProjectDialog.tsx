@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ITag, IVProjectStrings } from '../../../model';
 import {
-  Button,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
-  DialogProps,
   Grid,
-  styled,
   Tabs,
   Tab,
   SxProps,
@@ -28,6 +23,7 @@ import { shallowEqual, useSelector } from 'react-redux';
 import { vProjectSelector } from '../../../selector';
 import { ProjectBook } from './ProjectBook';
 import { StyledDialogTitle } from '../../StyledDialogTitle';
+import { AltActionBar } from '../../../AltActionBar';
 
 const initState = {
   name: '',
@@ -165,25 +161,24 @@ export function ProjectDialog(props: IProps) {
           addMode={mode === Mode.add}
         />
       </DialogContent>
-      <DialogActions>
-        <Button id="projCancel" onClick={handleClose} color="primary">
-          {t.cancel}
-        </Button>
-        <Button
-          id="projAdd"
-          onClick={handleAdd}
-          color="primary"
-          disabled={
-            (nameInUse && nameInUse(name)) ||
-            name === '' ||
-            bcp47 === 'und' ||
-            type === '' ||
-            bookErr !== ''
-          }
-        >
-          {mode === Mode.add ? t.add : t.save}
-        </Button>
-      </DialogActions>
+      <AltActionBar
+        primaryLabel={mode === Mode.add ? t.add : t.save}
+        primaryOnClick={handleAdd}
+        primaryDisabled={
+          (nameInUse && nameInUse(name)) ||
+          name === '' ||
+          bcp47 === 'und' ||
+          type === '' ||
+          bookErr !== ''
+        }
+        primaryKey={"add"}
+        primaryAria={t.add}
+        altShown={true}
+        altLabel={t.cancel}
+        altOnClick={handleClose}
+        altKey={"cancel"}
+        altAria={t.cancel}
+      />
     </Dialog>
   );
 }
