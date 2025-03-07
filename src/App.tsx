@@ -21,21 +21,6 @@ const theme = createTheme({
     button: {
       textTransform: 'capitalize'
     }
-  },
-  components: {
-    MuiDialogTitle: {
-      styleOverrides: {
-        root: {
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          padding: '10px',
-          paddingLeft: '25px',
-          color: 'secondary.contrastText',
-          borderBottom: '1px solid lightgray'
-        }
-      }
-    }
   }
 });
 

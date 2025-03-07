@@ -11,7 +11,6 @@ import {
 } from '../model';
 import {
   Dialog,
-  DialogTitle,
   Button,
   DialogContent,
   FormControlLabel,
@@ -25,10 +24,8 @@ import {
   TextField,
   MenuItem,
   Checkbox,
-  IconButton,
   Switch,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import Confirm from '../components/AlertDialog';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
@@ -50,7 +47,6 @@ import { shallowEqual, useSelector } from 'react-redux';
 import ParatextLinkedButton from '../components/ParatextLinkedButton';
 import { profileSelector } from '../selector';
 import { UnsavedContext } from '../context/UnsavedContext';
-import DeleteExpansion from '../components/DeleteExpansion';
 import { useOrbitData } from '../hoc/useOrbitData';
 import { RecordTransformResult, InitializedRecord } from '@orbit/records'
 import { useDispatch } from 'react-redux';

@@ -26,6 +26,7 @@ import { IDialog } from '../../../model';
 import { shallowEqual, useSelector } from 'react-redux';
 import { vProjectSelector } from '../../../selector';
 import { ProjectBook } from './ProjectBook';
+import { StyledDialogTitle } from '../../StyledDialogTitle';
 
 const initState = {
   name: '',
@@ -119,19 +120,9 @@ export function ProjectDialog(props: IProps) {
       maxWidth="md"
       fullWidth
     >
-      <DialogTitle 
-        id="projectDlg"
-        sx={{
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          padding: '10px',
-          paddingLeft: '25px',
-          color: 'secondary.contrastText',
-          borderBottom: '1px solid lightgray'
-        }}>
+      <StyledDialogTitle id="projectDlg">
         {t.newProject.replace('{0}', mode === Mode.add ? t.configure : t.edit)}
-      </DialogTitle>
+      </StyledDialogTitle>
       <Tabs 
         value={value}
         onChange={handleChange}
