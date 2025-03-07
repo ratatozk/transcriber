@@ -116,7 +116,7 @@ export function ProjectDialog(props: IProps) {
       aria-labelledby="projectDlg"
       scroll={'paper'}
       disableEnforceFocus
-      maxWidth="lg"
+      maxWidth="md"
       fullWidth
     >
       <DialogTitle 
