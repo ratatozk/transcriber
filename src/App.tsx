@@ -5,6 +5,7 @@ import { UnsavedProvider } from './context/UnsavedContext';
 import SnackBarProvider from './hoc/SnackBar';
 import { HotKeyProvider } from './context/HotKeyContext';
 import routes from './routes/NavRoutes';
+import { title } from 'node:process';
 export const HeadHeight = 64;
 
 const theme = createTheme({
@@ -21,6 +22,21 @@ const theme = createTheme({
       textTransform: 'capitalize'
     }
   },
+  components: {
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          padding: '10px',
+          paddingLeft: '25px',
+          color: 'secondary.contrastText',
+          borderBottom: '1px solid lightgray'
+        }
+      }
+    }
+  }
 });
 
 function App() {
