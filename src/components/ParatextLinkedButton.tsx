@@ -78,8 +78,7 @@ export const ParatextLinkedButton = (props: IProps) => {
               id="paraButton"
               key="paratext"
               sx={{ color: 'primary.contrastText', 
-                    borderColor: 'primary.contrastText', 
-                    textTransform: 'capitalize',
+                    borderColor: 'primary.contrastText',
                     transition: 'opacity 0.2s ease-in-out',
                     opacity: '100%',
                     '&:hover': {

@@ -16,27 +16,40 @@ interface IAltActionBar extends BoxProps {
     altAria: string;
 }
 
-export const AltActionBar = (props: IAltActionBar) => (
-  <ActionRow sx={{ textAlign: 'left', padding: '0px' }}>
+export const AltActionBar = ({
+  primaryLabel,
+  primaryOnClick,
+  primaryDisabled,
+  primaryKey,
+  primaryAria,
+  altShown,
+  altLabel,
+  altOnClick,
+  altDisabled,
+  altKey,
+  altAria,
+  ...rest
+}: IAltActionBar) => (
+  <ActionRow sx={{ textAlign: 'left', padding: '0px', backgroundColor: 'primary.contrastText', zIndex: '100', ...rest.sx }}>
     <PriButton
       id="primaryAction"
-      key={props.primaryKey}
-      aria-label={props.primaryAria}
-      disabled={props.primaryDisabled || false}
+      key={primaryKey}
+      aria-label={primaryAria}
+      disabled={primaryDisabled || false}
       sx={{ marginLeft: '0' }}
-      onClick={props.primaryOnClick}
+      onClick={primaryOnClick}
     >
-      {props.primaryLabel}  
+      {primaryLabel}  
     </PriButton>
-    { props.altShown && 
+    { altShown && 
       (<AltButton
         id="altAction"
-        key={props.altKey}
-        aria-label={props.altAria}
-        onClick={props.altOnClick}
-        sx={{ textTransform: 'capitalize', marginLeft:'8px' }}
+        key={altKey}
+        aria-label={altAria}
+        onClick={altOnClick}
+        sx={{ marginLeft:'8px' }}
       >
-        {props.altLabel}
+        {altLabel}
       </AltButton>)
     }
   </ActionRow>

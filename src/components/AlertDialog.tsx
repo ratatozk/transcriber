@@ -94,7 +94,6 @@ function AlertDialog(props: IProps) {
           onClick={handleNo} 
           color="primary"
           variant="contained"
-          sx={{ textTransform: 'capitalize' }}
           autoFocus
         >
           {no || t.no}
@@ -104,7 +103,7 @@ function AlertDialog(props: IProps) {
             id="alertYes"
             onClick={handleYes}
             color="primary"
-            sx={{ textTransform: 'capitalize', border: '0.5px solid', borderColor: 'primary' }}
+            sx={{ border: '0.5px solid', borderColor: 'primary' }}
           >
             {yes || t.yes}
           </Button>
