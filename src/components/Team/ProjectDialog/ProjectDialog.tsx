@@ -7,7 +7,6 @@ import {
   Tabs,
   Tab,
   SxProps,
-  Box,
 } from '@mui/material';
 import {
   ProjectName,
