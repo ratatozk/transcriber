@@ -147,33 +147,33 @@ export function ProjectDialog(props: IProps) {
         <Tab label="Advanced" sx={ tabProps }/>
       </Tabs>
       {basicTab ? (
-        <Box>
-          <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '10px' }}>
-              <ProjectName state={state} setState={setState} inUse={nameInUse} />
-              <ProjectDescription state={state} setState={setState} />
-            </Box>
-            <ProjectType type={type} onChange={handleTypeChange} />
-            <ProjectBook
-              state={state}
-              setState={setState}
-              setBookErr={setBookErr}
-            />
-            <Language {...state} onChange={handleLanguageChange} />
-            <ProjectTags state={state} setState={setState} />
-          </DialogContent>
-        </Box>
-      ) : (
-        <Box>
-          <DialogContent>
-            <ProjectExpansion
-              state={state}
-              setState={setState}
-              addMode={mode === Mode.add}
-            />
-          </DialogContent>
-        </Box>
-      )
+          <Box>
+            <DialogContent>
+              <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '10px' }}>
+                <ProjectName state={state} setState={setState} inUse={nameInUse} />
+                <ProjectDescription state={state} setState={setState} />
+              </Box>
+              <ProjectType type={type} onChange={handleTypeChange} />
+              <ProjectBook
+                state={state}
+                setState={setState}
+                setBookErr={setBookErr}
+              />
+              <Language {...state} onChange={handleLanguageChange} />
+              <ProjectTags state={state} setState={setState} />
+            </DialogContent>
+          </Box>
+        ) : (
+          <Box>
+            <DialogContent>
+              <ProjectExpansion
+                state={state}
+                setState={setState}
+                addMode={mode === Mode.add}
+              />
+            </DialogContent>
+          </Box>
+        )
       }
 
       <AltActionBar
