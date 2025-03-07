@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ITag, IVProjectStrings } from '../../../model';
 import {
   Button,
@@ -8,6 +8,9 @@ import {
   DialogTitle,
   DialogProps,
   styled,
+  Tabs,
+  Tab,
+  SxProps,
 } from '@mui/material';
 import {
   ProjectName,
@@ -57,6 +60,10 @@ interface IProps extends IDialog<IProjectDialog> {
   nameInUse?: (newName: string) => boolean;
 }
 
+const tabProps = {
+  width: "200px",
+} as SxProps;
+
 export function ProjectDialog(props: IProps) {
   const { mode, values, isOpen, onOpen, onCommit, onCancel, nameInUse } = props;
   const t = useSelector(vProjectSelector, shallowEqual);
@@ -94,6 +101,13 @@ export function ProjectDialog(props: IProps) {
     setState((state) => ({ ...state, ...val }));
   };
 
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
+
   return (
     <Dialog
       id="projectSettings"
@@ -102,7 +116,7 @@ export function ProjectDialog(props: IProps) {
       aria-labelledby="projectDlg"
       scroll={'paper'}
       disableEnforceFocus
-      maxWidth="lg"
+      maxWidth="md"
       fullWidth
     >
       <DialogTitle 
@@ -118,6 +132,22 @@ export function ProjectDialog(props: IProps) {
         }}>
         {t.newProject.replace('{0}', mode === Mode.add ? t.configure : t.edit)}
       </DialogTitle>
+      <Tabs 
+        value={value}
+        onChange={handleChange}
+        sx={{
+          "& .MuiTabs-indicator": {
+              backgroundColor: "secondary.dark",
+              height: "2px",
+            },
+          "& .Mui-selected": {
+            color: "secondary.dark"
+          }
+        }}
+      >
+        <Tab label="Basic" sx={ tabProps }/>
+        <Tab label="Advanced" sx={ tabProps }/>
+      </Tabs>
       <DialogContent>
         <ProjectName state={state} setState={setState} inUse={nameInUse} />
         <ProjectDescription state={state} setState={setState} />
