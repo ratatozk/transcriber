@@ -51,13 +51,45 @@ export const ProjectTags = (props: IProjectDialogState) => {
           }}
           control={
             <Checkbox
-              id="digest"
+              id="trainingTag"
               checked={ tagCheck }
               onChange={handleTagChange}
               sx={{ margin: '0px' }}
             />
           }
-          label={"labeledTag"}
+          label={"Training"}
+        />
+        <FormControlLabel
+          sx={{
+            ...textFieldProps,
+            marginLeft: '30px',
+            paddingLeft: '0px'
+          }}
+          control={
+            <Checkbox
+              id="backPropTag"
+              checked={ tagCheck }
+              onChange={handleTagChange}
+              sx={{ margin: '0px' }}
+            />
+          }
+          label={"Back Translation"}
+        />
+        <FormControlLabel
+          sx={{
+            ...textFieldProps,
+            marginLeft: '30px',
+            paddingLeft: '0px'
+          }}
+          control={
+            <Checkbox
+              id="testingTag"
+              checked={ tagCheck }
+              onChange={handleTagChange}
+              sx={{ margin: '0px' }}
+            />
+          }
+          label={"Training"}
         />
         <FormControlLabel
           sx={{
@@ -68,14 +100,14 @@ export const ProjectTags = (props: IProjectDialogState) => {
           control={
             <>
               <Checkbox
-                id="digest"
+                id="otherTag"
                 checked={ tagCheck }
                 onChange={handleTagChange}
                 sx={{ margin: '0px' }}
               />
               <TextField
                 title={"Press \'enter\' to save your tag."}
-                placeholder={"other.."}
+                placeholder={"Other.."}
                 //onChange={handleSyncFreqChange}
                 type="text"
                 size="small"
