@@ -41,7 +41,7 @@ export const ProjectTags = (props: IProjectDialogState) => {
 
   return(
     <>
-      <FormLabel sx={{ color: 'primary.main', textTransform: 'uppercase' }}>{t.tags}</FormLabel>
+      <FormLabel>{t.tags}</FormLabel>
       <Box sx={{display: 'flex', justifyContent: 'flex-start', position: 'relative' }}>
         <FormControlLabel
           sx={{
@@ -89,7 +89,7 @@ export const ProjectTags = (props: IProjectDialogState) => {
               sx={{ margin: '0px' }}
             />
           }
-          label={"Training"}
+          label={"Testing"}
         />
         <FormControlLabel
           sx={{
