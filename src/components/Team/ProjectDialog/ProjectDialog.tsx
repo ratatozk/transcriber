@@ -7,7 +7,6 @@ import {
   Tabs,
   Tab,
   SxProps,
-  Box,
 } from '@mui/material';
 import {
   ProjectName,
@@ -140,18 +139,14 @@ export function ProjectDialog(props: IProps) {
         <Tab label="Advanced" sx={ tabProps }/>
       </Tabs>
       <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '10px' }}>
-          <ProjectName state={state} setState={setState} inUse={nameInUse} />
-          <ProjectDescription state={state} setState={setState} />
-        </Box>
-        {/* <Grid container spacing={2}>
+        <Grid container spacing={2}>
           <Grid item xs={6}>
-            
+            <ProjectName state={state} setState={setState} inUse={nameInUse} />
           </Grid>
           <Grid item xs={6}>
-            
+            <ProjectDescription state={state} setState={setState} />
           </Grid>
-        </Grid> */}
+        </Grid>
         <ProjectType type={type} onChange={handleTypeChange} />
         <ProjectBook
           state={state}

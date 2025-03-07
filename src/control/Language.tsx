@@ -158,7 +158,7 @@ export const Language = (props: IProps) => {
               <TextField
                 id="language-font"
                 label={t.font}
-                sx={{ mx: 1, marginLeft: '10px' }}
+                sx={{ mx: 1, marginLeft: '11px' }}
                 value={fontFamilyName(font)}
                 onClick={handleChangeFont}
                 onKeyDown={handleChangeFont}
