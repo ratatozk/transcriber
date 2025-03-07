@@ -70,6 +70,7 @@ import SelectRole from '../control/SelectRole';
 import { ActionRow, AltButton, PriButton } from '../control';
 import ExtendableDeleteExpansion from './ExtendableDeleteExpansion';
 import { StyledDialogTitle } from './StyledDialogTitle';
+import { AltActionBar } from '../AltActionBar';
 
 const Caption = styled(Typography)<TypographyProps>(() => ({
   width: 150,
@@ -1266,58 +1267,18 @@ export function ProfileDialog(props: ProfileDialogProps) {
                         )}
                       </FormGroup>
                     </FormControl>
-                    <ActionRow sx={{ textAlign: 'left', padding: '0px' }}>
-                      <PriButton
-                        id="profileSave"
-                        key="add"
-                        aria-label={tp.add}
-                        disabled={
-                          !requiredComplete() ||
-                          !myChanged ||
-                          saveRequested(toolId) ||
-                          dupName
-                        }
-                        sx={{
-                          marginLeft: '0',
-                          textTransform: 'capitalize'
-                        }}
-                        onClick={
-                          currentUser === undefined ?
-                            handleAdd :
-                            handleSave
-                        }
-                      >
-                        {editUserId && /Add/i.test(editUserId)
-                          ? tp.add
-                          : userNotComplete()
-                            ? tp.next
-                            : tp.save}
-                      </PriButton>
-                      {((editUserId && /Add/i.test(editUserId)) ||
-                        (currentUser &&
-                          currentUser.attributes?.name !==
-                          currentUser.attributes?.email)) && (
-                          <AltButton
-                            id="profileCancel"
-                            key="cancel"
-                            aria-label={tp.cancel}
-                            onClick={handleCancel}
-                            sx={{ textTransform: 'capitalize', marginLeft:'8px' }}
-                          >
-                            {tp.cancel}
-                          </AltButton>
-                        )}
-                      {!readOnlyMode &&
-                      <AltButton
-                        id="createProfileLogout"
-                        key="logout"
-                        sx={{ textTransform: 'capitalize', marginLeft:'8px' }}
-                        aria-label={tp.logout}
-                        onClick={handleLogout}
-                      >
-                        {tp.logout}
-                      </AltButton>}
-                    </ActionRow>
+                    <AltActionBar
+                      primaryLabel={}
+                      primaryOnClick={}
+                      primaryDisabled={}
+                      primaryKey={}
+                      primaryAria={}
+                      altLabel={}
+                      altOnClick={}
+                      altDisabled={}
+                      altKey={}
+                      altAria={}
+                    ></AltActionBar>
                   </Box>
                 )
               }
