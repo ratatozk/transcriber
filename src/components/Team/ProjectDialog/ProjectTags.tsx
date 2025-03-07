@@ -14,8 +14,9 @@ import {
 import { IVProjectStrings } from '../../../model';
 import Tags from '../../../control/Tags';
 
+
 export const ProjectTags = (props: IProjectDialogState) => {
-  const { state, setState } = props;
+  const { state, tagCheck, setState } = props;
   const { tags } = state;
 
   const t: IVProjectStrings = useSelector(vProjectSelector, shallowEqual);
@@ -24,7 +25,7 @@ export const ProjectTags = (props: IProjectDialogState) => {
     setState((state) => ({ ...state, tags }));
   };
   const handleTagChange = (e: any) => {
-    setState((state) => ({ ...state }));
+    setState((state) => ({ ...state, tagCheck: e.target.checked }));
   };
 
   const textFieldProps = {
@@ -51,7 +52,7 @@ export const ProjectTags = (props: IProjectDialogState) => {
           control={
             <Checkbox
               id="digest"
-              checked={false}
+              checked={ tagCheck }
               onChange={handleTagChange}
               sx={{ margin: '0px' }}
             />
@@ -68,7 +69,7 @@ export const ProjectTags = (props: IProjectDialogState) => {
             <>
               <Checkbox
                 id="digest"
-                checked={false}
+                checked={ tagCheck }
                 onChange={handleTagChange}
                 sx={{ margin: '0px' }}
               />

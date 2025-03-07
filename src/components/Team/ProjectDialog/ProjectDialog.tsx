@@ -53,6 +53,7 @@ export interface IProjectDialogState {
   setState: React.Dispatch<React.SetStateAction<IProjectDialog>>;
   setBookErr?: React.Dispatch<React.SetStateAction<string>>;
   addMode?: boolean;
+  tagCheck?: boolean;
 }
 
 interface IProps extends IDialog<IProjectDialog> {
