@@ -25,6 +25,8 @@ import {
   MenuItem,
   Checkbox,
   Switch,
+  DialogTitle,
+  Stack,
 } from '@mui/material';
 import Confirm from '../components/AlertDialog';
 import Typography, { TypographyProps } from '@mui/material/Typography';
@@ -69,8 +71,8 @@ import {
 import SelectRole from '../control/SelectRole';
 import { ActionRow, AltButton, PriButton } from '../control';
 import ExtendableDeleteExpansion from './ExtendableDeleteExpansion';
+import { AltActionBar } from './AltActionBar';
 import { StyledDialogTitle } from './StyledDialogTitle';
-import { AltActionBar } from '../AltActionBar';
 
 const Caption = styled(Typography)<TypographyProps>(() => ({
   width: 150,
@@ -146,7 +148,8 @@ const profileMainProps = {
   maxWidth: '100%',
   justifyContent: 'center',
   mx: "10px",
-  padding: '10px'
+  padding: '10px',
+  paddingBottom: '0px'
 } as SxProps;
 
 const profileEmailProps = {
@@ -386,14 +389,10 @@ export function ProfileDialog(props: ProfileDialogProps) {
   const handleSyncFreqSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {
     toolChanged(toolId, true);
     setSync(e.target.checked);
-    if (e.target.checked) {
-      setSyncFreq(2);
-    }
-    else {
-      setSyncFreq(0);
-    }
+    const newFreq = e.target.checked ? 2 : 0;
+    setSyncFreq(newFreq);
     var hk = JSON.parse(hotKeys ?? '{}');
-    setHotKeys(JSON.stringify({ ...hk, syncFreq: 0 }));
+    setHotKeys(JSON.stringify({ ...hk, syncFreq: newFreq }));
   };
   const handleSyncFreqChange = (e: any) => {
     if (e.target.value < 1) e.target.value = 1;
@@ -585,7 +584,8 @@ export function ProfileDialog(props: ProfileDialogProps) {
     setProgBar(attr.progressbarTypeid);
     setHotKeys(attr.hotKeys);
     setAvatarUrl(attr.avatarUrl);
-    setSyncFreq(getSyncFreq(attr.hotKeys));
+    const syncFreq = getSyncFreq(attr.hotKeys);
+    setSyncFreq(syncFreq);
     setSync(syncFreq > 0);
   }
 
@@ -741,7 +741,8 @@ export function ProfileDialog(props: ProfileDialogProps) {
     setProgBar(attr.progressbarTypeid);
     setHotKeys(attr.hotKeys);
     setAvatarUrl(attr.avatarUrl);
-    setSyncFreq(getSyncFreq(attr.hotKeys));
+    const syncFreq = getSyncFreq(attr.hotKeys);
+    setSyncFreq(syncFreq);
     setSync(syncFreq > 0);
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [user, editId]);
@@ -807,12 +808,14 @@ export function ProfileDialog(props: ProfileDialogProps) {
             setConfirmClose(tp.discardChanges);
           } else handleCloseConfirmed();
         } : undefined
-      }
+        }
       >
         {editId && /Add/i.test(editId) ? (
             <Typography variant="h6">{tp.addMember}</Typography>
           ) : userNotComplete() ? (
             <Typography variant="h6">{tp.completeProfile}</Typography>
+          ) : editId ? (
+            <Typography variant="h6">{tp.editMember}</Typography>
           ) : (
             <Typography variant="h6">{t.myAccount}</Typography>
           )
@@ -821,7 +824,7 @@ export function ProfileDialog(props: ProfileDialogProps) {
       <DialogContent id="profileContent" 
         sx={profileContentProps}>
         <Box id="profilePanel" sx={profilePanelProps}>
-          <StyledGrid item xs={12} height='100%' margin={'30px 0px'}>
+          <StyledGrid item xs={12} height='100%' margin={'30px 0px 70px 0px'}>
             <Box sx= {{ width: '150px',
               height: '150px',
               borderRadius: '50%', 
@@ -941,11 +944,8 @@ export function ProfileDialog(props: ProfileDialogProps) {
             )}
         </Box>
         <Box id="profileMain" sx={profileMainProps}>
-          <Box>
-            <Grid container sx={{ height: '495px' }}>
-              <Grid item xs={12} sx={{ maxWidth: '100%' }}>
                 {readOnly ? (
-                    <Box>
+                    <Stack sx={{ height: '468px' }}>
                       <TextField
                         id="profileName"
                         label={tp.name}
@@ -1027,10 +1027,10 @@ export function ProfileDialog(props: ProfileDialogProps) {
                         }}
                       />
                       )}
-                    </Box>
+                    </Stack>
                   ) : (
-                    <Box>
-                      <FormControl sx={{ width: '100%', height: '443px', marginBottom: '15px' }}>
+                    <Stack>
+                      <FormControl sx={{ width: '100%' }}>
                         <FormGroup
                           sx={{
                             padding: '3px',
@@ -1244,78 +1244,78 @@ export function ProfileDialog(props: ProfileDialogProps) {
                           )}
                         </FormGroup>
                       </FormControl>
-                    </Box>
+                    </Stack>
                   )
                 }
-              </Grid>
-            </Grid>
-            {!readOnly && deleteItem !== '' && (
-              <Confirm
-                text={tp.deleteExplained}
-                yesResponse={handleDeleteConfirmed}
-                noResponse={handleDeleteRefused}
-              />
-            )}
-            {!readOnly && confirmCancel && (
-              <Confirm
-                text="Discard unsaved data?"
-                yesResponse={handleCancelConfirmed}
-                noResponse={handleCancelAborted}
-              />
-            )}
-            {!readOnly && confirmClose && (
-              <Confirm
-                text="Discard unsaved data?"
-                yesResponse={handleCloseConfirmed}
-                noResponse={handleCloseAborted}
-              />
+            {!readOnly && (
+              <Box 
+                sx={{ 
+                  position: 'sticky', 
+                  bottom: '0px', 
+                  padding: '10px 0px', 
+                  paddingLeft: '10px',
+                  pointerEvents: 'auto', 
+                  zIndex: '10',
+                  borderTop: '1px solid lightGray',
+                  backgroundColor: 'primary.contrastText'
+                }}
+              >
+                <AltActionBar
+                  primaryLabel={
+                    editId && /Add/i.test(editId)
+                    ? tp.add
+                    : userNotComplete()
+                      ? tp.next
+                      : tp.save
+                  }
+                  primaryOnClick={
+                    currentUser === undefined ? handleAdd : handleSave
+                  }
+                  primaryDisabled={
+                    !requiredComplete() ||
+                    !myChanged ||
+                    saveRequested(toolId) ||
+                    dupName
+                  }
+                  primaryKey={"add"}
+                  primaryAria={tp.add}
+                  altShown={
+                    (mode === 'create') || 
+                    (editId && /Add/i.test(editId)) ||
+                    (currentUser &&
+                      currentUser.attributes?.name !==
+                      currentUser.attributes?.email
+                  )}
+                  altLabel={mode === 'create' ? tp.logout : tp.cancel}
+                  altOnClick={handleCancel}
+                  altKey={"cancel"}
+                  altAria={tp.cancel}
+                  sx={{ width: '100%' }}
+                />
+              </Box>
             )}
           </Box>
-          <Box 
-          sx={{ 
-            position: 'sticky', 
-            bottom: '0px', 
-            padding: '10px 0px', 
-            paddingLeft: '10px',
-            pointerEvents: 'auto', 
-            zIndex: '10',
-            borderTop: '1px solid black',
-            backgroundColor: 'primary.contrastText'
-          }}>
-            <AltActionBar
-              primaryLabel={
-                editId && /Add/i.test(editId)
-                ? tp.add
-                : userNotComplete()
-                  ? tp.next
-                  : tp.save
-              }
-              primaryOnClick={
-                currentUser === undefined ? handleAdd : handleSave
-              }
-              primaryDisabled={
-                !requiredComplete() ||
-                !myChanged ||
-                saveRequested(toolId) ||
-                dupName
-              }
-              primaryKey={"add"}
-              primaryAria={tp.add}
-              altShown={
-                (mode === 'create') || 
-                (editId && /Add/i.test(editId)) ||
-                (currentUser &&
-                  currentUser.attributes?.name !==
-                  currentUser.attributes?.email
-              )}
-              altLabel={mode === 'create' ? tp.logout : tp.cancel}
-              altOnClick={handleCancel}
-              altKey={"cancel"}
-              altAria={tp.cancel}
-              sx={{ width: '100%' }}
+          {!readOnly && deleteItem !== '' && (
+            <Confirm
+              text={tp.deleteExplained}
+              yesResponse={handleDeleteConfirmed}
+              noResponse={handleDeleteRefused}
             />
-          </Box>
-        </Box>
+          )}
+          {!readOnly && confirmCancel && (
+            <Confirm
+              text="Discard unsaved data?"
+              yesResponse={handleCancelConfirmed}
+              noResponse={handleCancelAborted}
+            />
+          )}
+          {!readOnly && confirmClose && (
+            <Confirm
+              text="Discard unsaved data?"
+              yesResponse={handleCloseConfirmed}
+              noResponse={handleCloseAborted}
+            />
+          )}
       </DialogContent>
     </Dialog>
   );
